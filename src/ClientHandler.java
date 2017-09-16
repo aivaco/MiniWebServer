@@ -23,10 +23,27 @@ public class ClientHandler implements Runnable{
         System.out.println("\nClient accepted");
         try {
             String test = "";
-
+            int length = 0;
+            StringBuilder body = new StringBuilder();
             while ( !(test = clientInput.readLine()).isEmpty()) {
                 System.out.println(test);
+                if (test.startsWith("Content-Length: ")) {
+                    int index = test.indexOf(':') + 1;
+                    String len = test.substring(index).trim();
+                    length = Integer.parseInt(len);
+                }
             }
+            //Reads the body
+            if (length > 0) {
+                int read;
+                while ((read = clientInput.read()) != -1) {
+                    body.append((char) read);
+                    if (body.length() == length) {
+                        break;
+                    }
+                }
+            }
+            System.out.println(body);
 
         } catch (IOException e) {
             e.printStackTrace();
