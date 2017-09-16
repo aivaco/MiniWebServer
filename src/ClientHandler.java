@@ -22,29 +22,21 @@ public class ClientHandler implements Runnable{
     public void run() {
         System.out.println("\nClient accepted");
         try {
-            String test = "";
+            int messageType = 0;
             int length = 0;
-            StringBuilder body = new StringBuilder();
-            while ( !(test = clientInput.readLine()).isEmpty()) {
-                System.out.println(test);
-                if (test.startsWith("Content-Length: ")) {
-                    int index = test.indexOf(':') + 1;
-                    String len = test.substring(index).trim();
+            String line = "";
+            String body = "";
+            while ( !(line = clientInput.readLine()).isEmpty()) {
+                System.out.println(line);
+                messageType = checkMessageType(line);
+                if (line.startsWith("Content-Length: ")) {
+                    int index = line.indexOf(':') + 1;
+                    String len = line.substring(index).trim();
                     length = Integer.parseInt(len);
                 }
             }
-            //Reads the body
-            if (length > 0) {
-                int read;
-                while ((read = clientInput.read()) != -1) {
-                    body.append((char) read);
-                    if (body.length() == length) {
-                        break;
-                    }
-                }
-            }
+            body = getBody(length);
             System.out.println(body);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,5 +47,37 @@ public class ClientHandler implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
+
+    public int checkMessageType(String message){
+        if(message.contentEquals("GET")){
+            return 1;
+        }else if(message.contentEquals("POST")){
+            return 2;
+        }else if(message.contentEquals("HEAD")){
+            return 3;
+        }
+        return 0;
+    }
+
+    public String getBody(int length){
+        int read;
+        StringBuilder body = new StringBuilder();
+        if(length > 0) {
+            try {
+                while ((read = clientInput.read()) != -1) {
+                    body.append((char) read);
+                    if (body.length() == length) {
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return body.toString();
+    }
+
 }
