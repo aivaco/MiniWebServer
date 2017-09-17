@@ -91,15 +91,44 @@ public class OnFile {
         return list;
     }
 
-    public boolean clearFile(String name, String type) {
+    /***
+     * Takes a path directory and verifies if each subfolder exists before check file existence.
+     * @param urlParts
+     * @return
+     */
+    public boolean fileExists(String[] urlParts){
+        String urlPart = ".//";
+        boolean exists = true;
 
-        file = new File(".//" + name + "." + type);
-        if(file.delete()) {
+//        if(urlParts[0].isEmpty()){
+//            return exists;
+//        }
 
+        for(int i = 0 ; i<urlParts.length; ++i){
+            urlPart = urlPart + urlParts[i];
+            file = new File(urlPart);
+
+            if(i == urlParts.length - 1 && exists){
+
+                if(file.exists() && !file.isDirectory()){
+                    exists = true;
+                }
+                else{
+                    exists = false;
+                }
+            }
+            else if(exists && file.exists() && file.isDirectory()){
+                exists = true;
+            }
+            else{
+                exists = false;
+            }
         }
 
-        return true;
+        return exists;
     }
+
+
 
 
 }
