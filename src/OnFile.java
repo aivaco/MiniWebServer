@@ -1,5 +1,10 @@
+import org.apache.tika.Tika;
+
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +133,30 @@ public class OnFile {
         return exists;
     }
 
+    public byte[] readBytesFromFile(String name){
+        file = new File(".//" +name);
+        try {
+            return org.apache.commons.io.FileUtils.readFileToByteArray(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+    public String checkMIME(String name){
+        String MIME = "";
+        MIME = System.getProperty("user.dir")+"\\"+name;
+        //Path path = Paths.get(".//"+name);
+        Tika tika = new Tika();
+        file = new File(System.getProperty("user.dir")+"\\"+name);
 
+        try {
+            MIME = tika.detect(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return MIME;
+    }
 
 }

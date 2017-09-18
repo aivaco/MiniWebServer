@@ -28,7 +28,7 @@ public class ClientHandler implements Runnable{
         String line = "";
         StringBuilder header = new StringBuilder();
         String body = "";
-
+        String acceptType = "";
         System.out.println("\nClient accepted");
 
         try {
@@ -36,6 +36,9 @@ public class ClientHandler implements Runnable{
                 if(firstLine) {
                     messageType = checkMessageType(line);
                     firstLine = false;
+                }
+                if(line.contains("Accept:")){
+                    acceptType = line;
                 }
                 header.append(line);
                 if (line.startsWith("Content-Length: ")) {
@@ -52,7 +55,7 @@ public class ClientHandler implements Runnable{
         }
 
         //Process the message
-        message = new Message(messageType,header.toString(),body);
+        message = new Message(messageType,header.toString(),body,acceptType);
         returnMessage = message.processMessage();
         serverOutput.print(returnMessage);
         serverOutput.flush();
