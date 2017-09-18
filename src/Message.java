@@ -72,10 +72,15 @@ public class Message {
         url_parts = path.split("/");
         types = processFileTypes();
 
-        if(this.file.fileExists(url_parts) && checkFileType(types,path)){
+        if(this.file.fileExists(url_parts)){
 
-            this.state = State.Valid;
+            if (!checkFileType(types,path)) {
+                this.state = State.Error406;
+            } else {
+                this.state = State.Valid;
+            }
             returnMessage = getMessage(path);
+
 
         }else{
             this.state = State.Eror404;
