@@ -143,15 +143,15 @@ public class OnFile {
         return null;
     }
 
-    public String checkMIME(String name){
-        String MIME = "";
-        MIME = System.getProperty("user.dir")+"\\"+name;
-        //Path path = Paths.get(".//"+name);
-        Tika tika = new Tika();
-        file = new File(System.getProperty("user.dir")+"\\"+name);
+    public String checkMIME(String name) {
+        name = name.trim();
+        String filePath = System.getProperty("user.dir")+"\\"+name;
+        Path path = Paths.get(filePath);
 
+        Tika tika = new Tika();
+        String MIME = "";
         try {
-            MIME = tika.detect(file);
+            MIME = tika.detect(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
