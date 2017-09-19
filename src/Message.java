@@ -50,7 +50,7 @@ public class Message {
             default:
                 this.type = this.type.ERROR;
                 this.state = State.Error501;
-                returnMessage = getMessage("");
+                returnMessage = getMessage("", false);
         }
 
         return returnMessage;
@@ -81,25 +81,25 @@ public class Message {
             } else {
                 this.state = State.Valid;
             }
-            returnMessage = getMessage(path);
+            returnMessage = getMessage(path, false);
 
 
         }else{
-            this.state = State.Eror404;
-            returnMessage = getMessage(path);
+            this.state = State.Error404;
+            returnMessage = getMessage(path, false);
         }
         //System.out.println(path);
         return returnMessage;
     }
 
-    public String getMessage(String path){
+    public String getMessage(String path, boolean isHEAD){
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH);
         String returnMessage = "";
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-6"));
 
         switch(this.state){
-            case Eror404:               //Resource doesn't exist.
+            case Error404:               //Resource doesn't exist.
                 String error404Message = "Error 404: File Not Found.\n";
                 returnMessage =
                         "HTTP/1.1 404 Not Found\n" +
@@ -144,8 +144,10 @@ public class Message {
                         "Date: "+ dateFormat.format(date)+"\n" +
                         "Connection: close\n" +
                         "Content-Length: "+content.length()+"\n" +
-                        "\n"+
-                        content;
+                        "\n";
+                if (!isHEAD) {
+                    returnMessage+=content;
+                }
                 //data = getDocument(path);
                 break;
         }
@@ -191,8 +193,31 @@ public class Message {
 
 
     public String proccessHead(){
+        String path;
+        String returnMessage;
+        String[] url_parts;
+        List<String> types;
+        path = header.substring(header.indexOf("HEAD")+6, header.indexOf("HTTP"));
+        path.trim();
+        url_parts = path.split("/");
+        types = processFileTypes();
 
-        return "";
+        if(this.file.fileExists(url_parts)){
+
+            if (!checkFileType(types,path)) {
+                this.state = State.Error406;
+            } else {
+                this.state = State.Valid;
+            }
+            returnMessage = getMessage(path, true);
+
+
+        }else{
+            this.state = State.Error404;
+            returnMessage = getMessage(path, true);
+        }
+        //System.out.println(path);
+        return returnMessage;
     }
 
     public enum Type {
@@ -204,7 +229,7 @@ public class Message {
 
     private enum State {
         Valid,
-        Eror404,
+        Error404,
         Error406,
         Error501
     }
