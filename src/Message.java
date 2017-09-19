@@ -49,6 +49,8 @@ public class Message {
                 break;
             default:
                 this.type = this.type.ERROR;
+                this.state = State.Error501;
+                returnMessage = getMessage("");
         }
 
         return returnMessage;
@@ -99,7 +101,8 @@ public class Message {
         switch(this.state){
             case Eror404:               //Resource doesn't exist.
                 String error404Message = "Error 404: File Not Found.\n";
-                returnMessage = "HTTP/1.1 404 Not Found\n" +
+                returnMessage =
+                        "HTTP/1.1 404 Not Found\n" +
                         "Content-Type: text/html; charset=utf-8\n" +
                         "Server: JavaSimulated/1.0\n"+
                         "Date: "+ dateFormat.format(date)+"\n" +
@@ -110,7 +113,8 @@ public class Message {
                 break;
             case Error406:               //Invalid format
                 String error406Message = "Error 406: Not Acceptable.\n";
-                returnMessage = "HTTP/1.1 406 Not Acceptable\n" +
+                returnMessage =
+                        "HTTP/1.1 406 Not Acceptable\n" +
                         "Content-Type: text/html; charset=utf-8\n" +
                         "Server: JavaSimulated/1.0\n"+
                         "Date: "+ dateFormat.format(date)+"\n" +
@@ -121,7 +125,8 @@ public class Message {
                 break;
             case Error501:               //Invalid method
                 String error501Message = "Error 501: Not Implemented.\n";
-                returnMessage = "HTTP/1.1 501 Not Implemented\n" +
+                returnMessage =
+                        "HTTP/1.1 501 Not Implemented\n" +
                         "Content-Type: text/html; charset=utf-8\n" +
                         "Server: JavaSimulated/1.0\n"+
                         "Date: "+ dateFormat.format(date)+"\n" +
@@ -132,7 +137,8 @@ public class Message {
                 break;
             case Valid:
                 String content = new String(this.file.readBytesFromFile(path));
-                returnMessage = "HTTP/1.1 200 OK\n" +
+                returnMessage =
+                        "HTTP/1.1 200 OK\n" +
                         "Content-Type: text/html; charset=utf-8\n" +
                         "Server: JavaSimulated/1.0\n"+
                         "Date: "+ dateFormat.format(date)+"\n" +
