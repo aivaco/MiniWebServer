@@ -7,14 +7,15 @@ import java.util.*;
  */
 public class Message {
 
-   private Type type;
-   private State state;
-   private String header;
-   private String body;
-   private OnFile file;
-   private String acceptType;
+    private Type type;
+    private State state;
+    private String header;
+    private String acceptType;
+    private String path;
+    private String body;
+    private OnFile file;
 
-    public Message(int type, String header, String body, String acceptType){
+    public Message(int type, String header, String acceptType , String path, String body){
         switch(type){
             case 1:
                 this.type = this.type.POST;
@@ -29,26 +30,26 @@ public class Message {
                 this.type = this.type.ERROR;
         }
         this.header = header;
-        this.body = body;
         this.acceptType = acceptType;
+        this.path = path.substring(1).trim();
+        this.body = body;
         this.file = new OnFile();
 
     }
 
     public String processMessage(){
-         String returnMessage = "";
+        String returnMessage = "";
         switch(this.type){
             case POST:
-                returnMessage = proccessPost();
+                returnMessage = checkFileExistence(false);
                 break;
             case GET:
-                returnMessage = proccessGet();
+                returnMessage = checkFileExistence(false);
                 break;
             case HEAD:
-                returnMessage = proccessHead();
+                returnMessage = checkFileExistence(true);
                 break;
             default:
-                this.type = this.type.ERROR;
                 this.state = State.Error501;
                 returnMessage = getMessage("", false);
         }
@@ -56,39 +57,28 @@ public class Message {
         return returnMessage;
     }
 
-    public String proccessPost(){
-
-        return "";
-    }
-
-
-    public String proccessGet(){
-        int acceptLine = 0;
-        String path;
+    private String checkFileExistence(boolean isHEAD) {
         String returnMessage;
-        String extension;
-        String[] url_parts;
-        List<String> types;
-        path = header.substring(header.indexOf("GET")+5, header.indexOf("HTTP"));
-        path.trim();
-        url_parts = path.split("/");
-        types = processFileTypes();
+        if(this.file.fileExists(this.path)){
+            //The file exists
 
-        if(this.file.fileExists(url_parts)){
-
+            List<String> types;
+            types = processFileTypes();
+            //Checks if the file type is accepted
             if (!checkFileType(types,path)) {
+                // The file type is not accepted so it returns an error
                 this.state = State.Error406;
             } else {
+                // The file type is accepted
                 this.state = State.Valid;
             }
-            returnMessage = getMessage(path, false);
-
-
+            returnMessage = getMessage(this.path, isHEAD);
         }else{
+            //The file doesn't exists
+
             this.state = State.Error404;
-            returnMessage = getMessage(path, false);
+            returnMessage = getMessage(path, isHEAD);
         }
-        //System.out.println(path);
         return returnMessage;
     }
 
@@ -103,48 +93,48 @@ public class Message {
                 String error404Message = "Error 404: File Not Found.\n";
                 returnMessage =
                         "HTTP/1.1 404 Not Found\n" +
-                        "Content-Type: text/html; charset=utf-8\n" +
-                        "Server: JavaSimulated/1.0\n"+
-                        "Date: "+ dateFormat.format(date)+"\n" +
-                        "Connection: close\n" +
-                        "Content-Length: "+error404Message.length()+"\n" +
-                        "\n" +
-                        error404Message;
+                                "Content-Type: text/html; charset=utf-8\n" +
+                                "Server: JavaSimulated/1.0\n"+
+                                "Date: "+ dateFormat.format(date)+"\n" +
+                                "Connection: close\n" +
+                                "Content-Length: "+error404Message.length()+"\n" +
+                                "\n" +
+                                error404Message;
                 break;
             case Error406:               //Invalid format
                 String error406Message = "Error 406: Not Acceptable.\n";
                 returnMessage =
                         "HTTP/1.1 406 Not Acceptable\n" +
-                        "Content-Type: text/html; charset=utf-8\n" +
-                        "Server: JavaSimulated/1.0\n"+
-                        "Date: "+ dateFormat.format(date)+"\n" +
-                        "Connection: close\n" +
-                        "Content-Length: "+error406Message.length()+"\n" +
-                        "\n" +
-                        error406Message;
+                                "Content-Type: text/html; charset=utf-8\n" +
+                                "Server: JavaSimulated/1.0\n"+
+                                "Date: "+ dateFormat.format(date)+"\n" +
+                                "Connection: close\n" +
+                                "Content-Length: "+error406Message.length()+"\n" +
+                                "\n" +
+                                error406Message;
                 break;
             case Error501:               //Invalid method
                 String error501Message = "Error 501: Not Implemented.\n";
                 returnMessage =
                         "HTTP/1.1 501 Not Implemented\n" +
-                        "Content-Type: text/html; charset=utf-8\n" +
-                        "Server: JavaSimulated/1.0\n"+
-                        "Date: "+ dateFormat.format(date)+"\n" +
-                        "Connection: close\n" +
-                        "Content-Length: "+error501Message.length()+"\n" +
-                        "\n" +
-                        error501Message;
+                                "Content-Type: text/html; charset=utf-8\n" +
+                                "Server: JavaSimulated/1.0\n"+
+                                "Date: "+ dateFormat.format(date)+"\n" +
+                                "Connection: close\n" +
+                                "Content-Length: "+error501Message.length()+"\n" +
+                                "\n" +
+                                error501Message;
                 break;
             case Valid:
                 String content = new String(this.file.readBytesFromFile(path));
                 returnMessage =
                         "HTTP/1.1 200 OK\n" +
-                        "Content-Type: text/html; charset=utf-8\n" +
-                        "Server: JavaSimulated/1.0\n"+
-                        "Date: "+ dateFormat.format(date)+"\n" +
-                        "Connection: close\n" +
-                        "Content-Length: "+content.length()+"\n" +
-                        "\n";
+                                "Content-Type: text/html; charset=utf-8\n" +
+                                "Server: JavaSimulated/1.0\n"+
+                                "Date: "+ dateFormat.format(date)+"\n" +
+                                "Connection: close\n" +
+                                "Content-Length: "+content.length()+"\n" +
+                                "\n";
                 if (!isHEAD) {
                     returnMessage+=content;
                 }
@@ -160,7 +150,7 @@ public class Message {
         List<String> types = new ArrayList<>();
         String temp = "";
         for(String temp2 : temporal){
-           types.addAll(Arrays.asList(temp2.split(",")));
+            types.addAll(Arrays.asList(temp2.split(",")));
         }
 
         for(int i = 0; i<types.size(); ++i){
@@ -189,35 +179,6 @@ public class Message {
         data = file.readFile(path);
 
         return data;
-    }
-
-
-    public String proccessHead(){
-        String path;
-        String returnMessage;
-        String[] url_parts;
-        List<String> types;
-        path = header.substring(header.indexOf("HEAD")+6, header.indexOf("HTTP"));
-        path.trim();
-        url_parts = path.split("/");
-        types = processFileTypes();
-
-        if(this.file.fileExists(url_parts)){
-
-            if (!checkFileType(types,path)) {
-                this.state = State.Error406;
-            } else {
-                this.state = State.Valid;
-            }
-            returnMessage = getMessage(path, true);
-
-
-        }else{
-            this.state = State.Error404;
-            returnMessage = getMessage(path, true);
-        }
-        //System.out.println(path);
-        return returnMessage;
     }
 
     public enum Type {

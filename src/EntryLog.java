@@ -17,8 +17,21 @@ public class EntryLog {
         return method;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public void setMethod(int method) {
+
+        switch (method) {
+            case 1:
+                this.method = "POST";
+                break;
+            case 2:
+                this.method = "GET";
+                break;
+            case 3:
+                this.method = "HEAD";
+                break;
+            default:
+                this.method = "UNDEFINED";
+        }
     }
 
     public String getTimeStamp() {

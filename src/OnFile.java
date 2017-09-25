@@ -96,42 +96,64 @@ public class OnFile {
         return list;
     }
 
+//    /***
+//     * Takes a path directory and verifies if each subfolder exists before check file existence.
+//     * @param urlParts
+//     * @return
+//     */
+//    public boolean fileExists(String[] urlParts){
+//        String urlPart = ".//";
+//        boolean exists = true;
+//
+////        if(urlParts[0].isEmpty()){
+////            return exists;
+////        }
+//
+//        for(int i = 0 ; i<urlParts.length; ++i){
+//            urlPart = urlPart + urlParts[i];
+//            file = new File(urlPart);
+//
+//            if(i == urlParts.length - 1 && exists){
+//
+//                if(file.exists() && !file.isDirectory()){
+//                    exists = true;
+//                }
+//                else{
+//                    exists = false;
+//                }
+//            }
+//            else if(exists && file.exists() && file.isDirectory()){
+//                exists = true;
+//            }
+//            else{
+//                exists = false;
+//            }
+//        }
+//
+//        return exists;
+//    }
+
     /***
-     * Takes a path directory and verifies if each subfolder exists before check file existence.
-     * @param urlParts
+     * Checks the file existence.
+     * @param path
      * @return
      */
-    public boolean fileExists(String[] urlParts){
-        String urlPart = ".//";
-        boolean exists = true;
+    public boolean fileExists(String path){
+        String filePath = ".//";
+        boolean exists;
 
-//        if(urlParts[0].isEmpty()){
-//            return exists;
-//        }
-
-        for(int i = 0 ; i<urlParts.length; ++i){
-            urlPart = urlPart + urlParts[i];
-            file = new File(urlPart);
-
-            if(i == urlParts.length - 1 && exists){
-
-                if(file.exists() && !file.isDirectory()){
-                    exists = true;
-                }
-                else{
-                    exists = false;
-                }
-            }
-            else if(exists && file.exists() && file.isDirectory()){
-                exists = true;
-            }
-            else{
-                exists = false;
-            }
+        filePath = filePath + path;
+        file = new File(filePath);
+        if(file.exists() && !file.isDirectory()){
+            exists = true;
         }
-
+        else{
+            exists = false;
+        }
         return exists;
     }
+
+
 
     public byte[] readBytesFromFile(String name){
         file = new File(".//" +name);
