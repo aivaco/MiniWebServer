@@ -16,11 +16,12 @@ public class WebServer {
     public void start(int port) throws IOException {
 
         onFile = new OnFile();
-        onFile.createFile("bitacora","html");
+        onFile.createFile("log","html");
         onFile.writeLineInFile(
-                "<meta charset=\"UTF-8\">\n<table summary=\"Bitácora\" border=\"1\"><caption align=\"bottom\">Bitácora de solicitudes al MiniServidor</caption>\n" +
+                "<meta charset=\"UTF-8\">\n<title>Log</title>\n<table summary=\"Bitácora\" border=\"1\"><caption align=\"bottom\">Bitácora de solicitudes al MiniServidor</caption>\n" +
                 "<tbody>\n" +
-                "<tr><th scope=\"col\">Método</th><th scope=\"col\">Estampilla de Tiempo</th><th scope=\"col\">Servidor</th><th scope=\"col\">Refiere</th><th scope=\"col\">URL</th><th scope=\"col\">Datos</th></tr>\n", "bitacora.html");
+                "<tr><th scope=\"col\">Método</th><th scope=\"col\">Estampilla de Tiempo</th><th scope=\"col\">Servidor</th><th scope=\"col\">Refiere</th><th scope=\"col\">URL</th><th scope=\"col\">Datos</th></tr>\n",
+                "log.html");
 
         // Starts the server socket
         serverListener = new ServerSocket(port);

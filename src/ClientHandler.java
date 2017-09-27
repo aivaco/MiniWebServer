@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Date;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 
@@ -87,7 +88,7 @@ public class ClientHandler implements Runnable{
         }
 
         //Process the message
-        message = new Message(messageType, header.toString(), acceptType, urlLog, body);
+        message = new Message(messageType, acceptType, urlLog);
         returnMessage = message.processMessage();
         serverOutput.print(returnMessage);
         serverOutput.flush();
@@ -99,7 +100,9 @@ public class ClientHandler implements Runnable{
             e.printStackTrace();
         }
 
+        Date date = new Date();
         entryLog.setMethod(messageType);
+        entryLog.setTimeStamp(String.valueOf(date.getTime()));
         entryLog.setServer("localhost");
         entryLog.setRefer(refererLog);
         entryLog.setUrl(urlLog);
@@ -107,13 +110,12 @@ public class ClientHandler implements Runnable{
 
         try {
             mutex.acquire();
+            OnFile onFile = new OnFile();
+            onFile.writeLineInFile( "<tr>\n<td>"+entryLog.getMethod()+"</td>\n<td>"+entryLog.getTimeStamp()+"</td>\n<td>"+entryLog.getServer()+"</td>\n<td>"+entryLog.getRefer()+"</td>\n<td>"+entryLog.getUrl()+"</td>\n<td>"+entryLog.getDatos()+"</td>\n</tr>", "log.html");
+            mutex.release();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        OnFile onFile = new OnFile();
-        onFile.writeLineInFile( "<tr>\n<td>"+entryLog.getMethod()+"</td>\n<td>"+entryLog.getTimeStamp()+"</td>\n<td>"+entryLog.getServer()+"</td>\n<td>"+entryLog.getRefer()+"</td>\n<td>"+entryLog.getUrl()+"</td>\n<td>"+entryLog.getDatos()+"</td>\n</tr>", "bitacora.html");
-        mutex.release();
     }
 
     /***

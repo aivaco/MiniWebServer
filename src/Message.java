@@ -9,13 +9,11 @@ public class Message {
 
     private Type type;                  // The message's type.
     private State state;                // The request's state.
-    private String header;              // The message's header.
     private String acceptType;          // It is used to compare the header accept file type and the file type.
     private String path;                // The path to a require file.
-    private String body;                // The content's message.
     private OnFile file;                // It is used to manipulates a file.
 
-    public Message(int type, String header, String acceptType , String path, String body){
+    public Message(int type, String acceptType , String path){
         switch(type){
             case 1:
                 this.type = this.type.POST;
@@ -29,12 +27,9 @@ public class Message {
             default:
                 this.type = this.type.ERROR;
         }
-        this.header = header;
         this.acceptType = acceptType;
         this.path = path.substring(1).trim();
-        this.body = body;
         this.file = new OnFile();
-
     }
 
     /***
@@ -42,7 +37,7 @@ public class Message {
      * @return
      */
     public String processMessage(){
-        String returnMessage = "";
+        String returnMessage;
         switch(this.type){
             case POST:
                 returnMessage = checkFileExistence(false);
@@ -83,7 +78,7 @@ public class Message {
             }
             returnMessage = getMessage(this.path, isHEAD);
         }else{
-            //The file doesn't exists
+            //The file doesn't exist
 
             this.state = State.Error404;
             returnMessage = getMessage(path, isHEAD);
