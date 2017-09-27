@@ -154,7 +154,11 @@ public class OnFile {
     }
 
 
-
+    /***
+     * Reads bytes of a respective file.
+     * @param name
+     * @return
+     */
     public byte[] readBytesFromFile(String name){
         file = new File(".//" +name);
         try {
@@ -165,6 +169,11 @@ public class OnFile {
         return null;
     }
 
+    /***
+     * Obtains the MIME type from a file.
+     * @param name
+     * @return
+     */
     public String checkMIME(String name) {
         name = name.trim();
         String filePath = System.getProperty("user.dir")+"\\"+name;

@@ -10,14 +10,13 @@ import java.util.concurrent.Semaphore;
 
 public class ClientHandler implements Runnable{
 
-    private Socket clientSocket;
-    // Takes the input from the client
-    private BufferedReader clientInput;
-    private PrintWriter serverOutput;
-    private Message message;
-    private String returnMessage;
+    private Socket clientSocket;                    // Takes the input from the client
+    private BufferedReader clientInput;             // It is  used to read the message.
+    private PrintWriter serverOutput;               // Used to write an answer to the client.
+    private Message message;                        // Contains the message which was sent to the server.
+    private String returnMessage;                   // The answer.
 
-    private EntryLog entryLog;
+    private EntryLog entryLog;                      // Used to store the actions of the server.
     private static Semaphore mutex = new Semaphore(1);
 
     public ClientHandler(Socket socket) throws IOException {
@@ -42,6 +41,7 @@ public class ClientHandler implements Runnable{
         System.out.println("\nClient accepted");
 
         try {
+            //Starts to read the message.
             while ( !(line = clientInput.readLine()).isEmpty()) {
                 if(firstLine) {
                     messageType = checkMessageType(line);
@@ -119,6 +119,11 @@ public class ClientHandler implements Runnable{
         mutex.release();
     }
 
+    /***
+     * Checks the method required by the client.
+     * @param message
+     * @return
+     */
     public int checkMessageType(String message){
         if(message.contains("POST")){
             return 1;
@@ -130,6 +135,11 @@ public class ClientHandler implements Runnable{
         return 0;
     }
 
+    /***
+     * Starts to read from the last line of the header (for this case: Accept-Length:#) the quantity of bytes which have been indicated in it.
+     * @param length
+     * @return
+     */
     public String getBody(int length){
         int read;
         StringBuilder body = new StringBuilder();

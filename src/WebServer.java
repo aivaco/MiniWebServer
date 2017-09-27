@@ -2,6 +2,9 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/***
+ * Simulates the server listening through sockets.
+ */
 public class WebServer {
 
     // Socket that will keep listening to incoming requests from the clients
@@ -27,6 +30,7 @@ public class WebServer {
         while (true) {
             // Accepts the client
             socket = serverListener.accept();
+            // For each new connection a new thread is created
             new ClientHandler(socket).run();
         }
 

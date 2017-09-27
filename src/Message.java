@@ -3,17 +3,17 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Created by aivan on 15/09/2017.
+ * Basically this class is in charge of administrate the message which has been received and generates an answer.
  */
 public class Message {
 
-    private Type type;
-    private State state;
-    private String header;
-    private String acceptType;
-    private String path;
-    private String body;
-    private OnFile file;
+    private Type type;                  // The message's type.
+    private State state;                // The request's state.
+    private String header;              // The message's header.
+    private String acceptType;          // It is used to compare the header accept file type and the file type.
+    private String path;                // The path to a require file.
+    private String body;                // The content's message.
+    private OnFile file;                // It is used to manipulates a file.
 
     public Message(int type, String header, String acceptType , String path, String body){
         switch(type){
@@ -37,6 +37,10 @@ public class Message {
 
     }
 
+    /***
+     * Verifies the message operation and calls the respective function.
+     * @return
+     */
     public String processMessage(){
         String returnMessage = "";
         switch(this.type){
@@ -57,6 +61,11 @@ public class Message {
         return returnMessage;
     }
 
+    /***
+     * Verifies if a file exists in the server.
+     * @param isHEAD
+     * @return
+     */
     private String checkFileExistence(boolean isHEAD) {
         String returnMessage;
         if(this.file.fileExists(this.path)){
@@ -82,6 +91,12 @@ public class Message {
         return returnMessage;
     }
 
+    /***
+     * Process the message and return an appropriate answer.
+     * @param path
+     * @param isHEAD
+     * @return
+     */
     public String getMessage(String path, boolean isHEAD){
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH);
@@ -144,6 +159,10 @@ public class Message {
         return returnMessage;
     }
 
+    /***
+     *
+     * @return
+     */
     public List<String> processFileTypes(){
         String accept = this.acceptType.substring(8,this.acceptType.length());
         String[] temporal = accept.split(";");
@@ -163,6 +182,12 @@ public class Message {
         return types;
     }
 
+    /***
+     * Checks the file type if is valid or not.
+     * @param type
+     * @param path
+     * @return
+     */
     public boolean checkFileType(List<String> type,String path){
         String extension = this.file.checkMIME(path);
         if(type.contains("*/*")){
@@ -173,14 +198,9 @@ public class Message {
         return false;
     }
 
-
-    public List<String> getDocument(String path){
-        List<String> data = new ArrayList<String>();
-        data = file.readFile(path);
-
-        return data;
-    }
-
+    /***
+     * Facilitates the differentiation between the requests.
+     */
     public enum Type {
         POST,
         GET,
@@ -188,6 +208,9 @@ public class Message {
         ERROR
     }
 
+    /***
+     * It is used to manage the possible answer message case.
+     */
     private enum State {
         Valid,
         Error404,
