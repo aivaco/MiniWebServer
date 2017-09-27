@@ -47,11 +47,11 @@ public class ClientHandler implements Runnable{
                     messageType = checkMessageType(line);
                     urlLog = line.substring(line.indexOf("/"), line.indexOf("HTTP")-1);
                     // Checks if the request is a GET
-                    if (2 == messageType ) {
+                    if (messageType == 2) {
                         // Is GET so the data is in the in the URL
                         int dataIndex = urlLog.indexOf("?");
                         //Checks if has URL has any parameters
-                        if(-1 != dataIndex ) {
+                        if(dataIndex != -1) {
                             // Has parameters
                             dataLog = urlLog.substring(dataIndex+1);
                             dataLog.replaceAll("&", "&amp;");
@@ -60,26 +60,25 @@ public class ClientHandler implements Runnable{
                     }
                     firstLine = false;
                 }
-                if(line.contains("Accept:")){
+                else if(line.contains("Accept:")){
                     acceptType = line;
                 }
-                if(line.contains("Referer:")) {
+                else if(line.contains("Referer:")) {
                     int indexURL = StringUtils.ordinalIndexOf(line, "/", 3);
-                    refererLog = line.substring(line.indexOf("://")+3,indexURL);
-//                    int debug = 0;
+                    refererLog = line.substring(line.indexOf("://") + 3, indexURL);
                 }
-                header.append(line);
-                if (line.startsWith("Content-Length: ")) {
+                else if (line.startsWith("Content-Length: ")) {
                     int index = line.indexOf(':') + 1;
                     String len = line.substring(index).trim();
                     length = Integer.parseInt(len);
                 }
+                header.append(line);
                 System.out.println(line);
             }
             body = getBody(length);
             System.out.println(body);
             // Checks if the request is POST
-            if (1 == messageType) {
+            if (messageType == 1) {
                 // Is POST so the data is in the body
                 dataLog = body.replaceAll("&", "&amp;");
             }
@@ -92,7 +91,6 @@ public class ClientHandler implements Runnable{
         returnMessage = message.processMessage();
         serverOutput.print(returnMessage);
         serverOutput.flush();
-
         try {
             clientInput.close();
             serverOutput.close();
@@ -106,7 +104,6 @@ public class ClientHandler implements Runnable{
         entryLog.setRefer(refererLog);
         entryLog.setUrl(urlLog);
         entryLog.setDatos(dataLog);
-        int debug = 0;
 
         try {
             mutex.acquire();
